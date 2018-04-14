@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.perpule.assignment.sample_webservice.base.DBColumn;
@@ -67,89 +67,6 @@ public class DatabaseHelper {
     	}
 	}
 	
-	public JSONObject execute(String sql) {
-		JSONObject response = new JSONObject();
-		try {
-			DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-			Connection connection = dbHelper.isConnected();
-			if(connection != null) {
-				Statement stmt = connection.createStatement();
-//				int a = stmt.executeUpdate(sql);
-				int update = stmt.executeUpdate(sql);
-				 ResultSet rs = stmt.getGeneratedKeys();
-				 /*if (rs != null && rs.next()) {
-				  Long key = rs.getLong(1);
-				 }*/
-				response.put("result", update);
-				response.put("result_set", ResultSetToJSON(rs));
-				connection.close();
-				return response;
-			} else {
-				response.put("error", "Failed to connect to database.");
-				return response;
-			}
-		} catch(Exception ex) {
-			ex.printStackTrace();
-			response.put("error", ex.toString());
-			if(connection != null) {
-				try {
-				connection.close();
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-			return response;
-		}
-	}
-	
-	public JSONObject create() {
-
-		return new JSONObject();
-	}
-	
-	public JSONObject read(String sql) throws Exception {
-		JSONObject response = new JSONObject();
-		try {
-			DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-			Connection connection = dbHelper.isConnected();
-			if(connection != null) {
-				Statement stmt = connection.createStatement();
-//				int a = stmt.executeUpdate(sql);
-				 ResultSet rs = stmt.executeQuery(sql);
-				 /*if (rs != null && rs.next()) {
-				  Long key = rs.getLong(1);
-				 }*/
-				response.put("result", ResultSetToJSON(rs));
-				connection.close();
-				return response;
-			} else {
-				response.put("error", "Failed to connect to database.");
-				return response;
-			}
-		} catch(Exception ex) {
-			ex.printStackTrace();
-			response.put("error", ex.toString());
-			if(connection != null) {
-				try {
-				connection.close();
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-			return response;
-		}
-	}
-	
-	public JSONObject update() {
-		
-		return new JSONObject();
-	}
-	
-	public int delete() {
-		
-		return -1;
-	}
-	
 	public boolean createTable() {
 		
 		String sql = "CREATE TABLE IF NOT EXISTS customer (";
@@ -188,6 +105,101 @@ public class DatabaseHelper {
 		return false;
 	}
 	
+	public int executeRawUpdate(String sql) throws Exception {
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+		Connection connection = dbHelper.isConnected();
+		if(connection != null) {
+			Statement stmt = connection.createStatement();
+			int update = stmt.executeUpdate(sql);
+			connection.close();
+			return update;
+		} else {
+			throw new Exception();
+		}
+	}
+	
+	public JSONArray executeRawQuery(String sql) throws Exception {
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+		Connection connection = dbHelper.isConnected();
+		if(connection != null) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			connection.close();
+			return ResultSetToJSON(rs);
+		} else {
+			throw new Exception();
+		}
+	}
+	
+	public JSONObject create() {
+		return new JSONObject();
+	}
+	
+	public JSONArray read(String sql) throws Exception {
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+		Connection connection = dbHelper.isConnected();
+		if(connection != null) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			connection.close();
+			return ResultSetToJSON(rs);
+		} else {
+			throw new Exception();
+		}		
+	}
+	
+	public Integer update(String table_name, JSONObject params, String where) throws Exception {
+		String sql = "UPDATE " + table_name + " SET ";
+		String name_value;
+		int i=0;
+		for(Object key: params.keySet()) {
+			String key_name = (String) key;
+			name_value = "";
+			if(i!=0) {
+				name_value = ", ";
+			}
+			if(params.get(key_name) instanceof Integer || params.get(key_name) instanceof Boolean) {
+				name_value = name_value.concat(key_name + "=" + params.get(key_name)); 
+			} else if (params.get(key_name) instanceof String) {
+				name_value = name_value.concat(key_name + "='" + params.get(key_name) + "'");
+			} else {
+				continue;
+			}
+			sql = sql.concat(name_value);
+		}
+		
+		sql = sql.concat(" " + where + ";");
+		
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+		Connection connection = dbHelper.isConnected();
+		if(connection != null) {
+			Statement stmt = connection.createStatement();
+			int update = stmt.executeUpdate(sql);
+			connection.close();
+			return update;
+		} else {
+			throw new Exception();
+		}
+	}
+	
+	public int delete( String table_name, String where) throws Exception{
+		String sql="";
+		sql = sql.concat(" " + where + ";");
+		
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+		Connection connection = dbHelper.isConnected();
+		if(connection != null) {
+			Statement stmt = connection.createStatement();
+			int update = stmt.executeUpdate(sql);
+			connection.close();
+			return update;
+		} else {
+			throw new Exception();
+		}
+	}
+	
+	
+	
 	public JSONArray ResultSetToJSON(ResultSet rs) {
 		JSONArray array = new JSONArray();
 
@@ -196,16 +208,24 @@ public class DatabaseHelper {
 			while(rs.next()) {
 				obj = new JSONObject();
 				try {
-				   obj.put("first_name", rs.getString("first_name"));
-				   obj.put("last_name", rs.getString("last_name"));
-				   obj.put("username", rs.getString("username"));
-				   obj.put("password", rs.getString("password"));
+					if(rs.getString("first_name") != null) {
+						obj.put("first_name", rs.getString("first_name"));	
+					}
+					if(rs.getString("last_name") != null) {
+						obj.put("last_name", rs.getString("last_name"));	
+					}
+					if(rs.getString("username") != null) {
+						obj.put("username", rs.getString("username"));	
+					}
+					if(rs.getString("password") != null) {
+						obj.put("password", rs.getString("password"));	
+					}
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}
 	
 	
-			   array.put(obj);
+			   array.add(obj);
 			} 
 		} catch(Exception ex) {
 			ex.printStackTrace();

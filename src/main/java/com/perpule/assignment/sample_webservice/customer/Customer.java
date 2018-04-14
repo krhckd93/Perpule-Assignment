@@ -1,10 +1,10 @@
 package com.perpule.assignment.sample_webservice.customer;
 import org.json.simple.JSONObject;
+
 import org.json.simple.parser.JSONParser;
 
+import com.perpule.assignment.sample_webservice.helpers.AuthenticationHelper;
 import com.perpule.assignment.sample_webservice.helpers.DatabaseHelper;
-
-import java.sql.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,11 +12,11 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+@SuppressWarnings("unchecked")
 @Path("/customer")
 public class Customer {
 	
@@ -26,11 +26,19 @@ public class Customer {
 		// TODO : Call DatabaseHelper's read method
 		String sql = ""; 
 		if(customer_id != -1 ) {
-			sql = "SELECT id, first_name, last_name, username from customer WHERE id = " + customer_id + ";";
+			sql = "SELECT id, first_name, last_name, username, password from customer WHERE id = " + customer_id + ";";
 		} else {
-			sql = "SELECT id, first_name, last_name, username from customer;";
+			sql = "SELECT id, first_name, last_name, username, password from customer;";
 		}
-		return DatabaseHelper.getInstance().read(sql).toJSONString();
+		JSONObject response = new JSONObject();
+		try {
+			response.put("result", DatabaseHelper.getInstance().read(sql));
+			return response.toJSONString();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+			response.put("error", ex.toString());
+			return response.toJSONString();
+		}
 	}
 	
 	@POST
@@ -66,7 +74,7 @@ public class Customer {
 		
 		if(customer.containsKey("password")) {
 			columns = columns.concat("password");
-			values = values.concat("," + "'" + customer.get("password") + "'");
+			values = values.concat("," + "'" + AuthenticationHelper.get_SHA_1_Secure((String)customer.get("password")) + "'");
 		}
 		
 		if(!values.equalsIgnoreCase("VALUES ( ") && !columns.equalsIgnoreCase(" ( ")) {
@@ -75,15 +83,31 @@ public class Customer {
 			sql = sql.concat(columns);
 			sql = sql.concat(values + ";");
 		}
-//		if(customer.containsKey(""))
-		return DatabaseHelper.getInstance().execute(sql).toJSONString();
+		
+		JSONObject response = new JSONObject();
+		try {
+			response.put("result", DatabaseHelper.getInstance().executeRawUpdate(sql));
+			return response.toJSONString();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+			response.put("error", ex.toString());
+			return response.toJSONString();
+		}
 	}
 	
 	@DELETE
 	@Consumes(MediaType.TEXT_PLAIN)
-	public JSONObject deleteCustomer(Integer customer_id) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public String deleteCustomer(Integer customer_id) {
+		JSONObject response = new JSONObject();
 		String sql = "DELETE FROM customer WHERE id = " + customer_id.toString();
-		return DatabaseHelper.getInstance().execute(sql);
+		try {
+			response.put("result", DatabaseHelper.getInstance().executeRawUpdate(sql));
+		} catch(Exception ex) {
+			ex.printStackTrace();
+			response.put("error", ex.toString());
+		}
+		return response.toJSONString(); 
 	}
 	
 }
