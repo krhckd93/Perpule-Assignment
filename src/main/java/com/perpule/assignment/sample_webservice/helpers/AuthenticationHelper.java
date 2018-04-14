@@ -9,10 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -32,15 +32,25 @@ public class AuthenticationHelper {
 	private Cipher dcipher;
 	private static String secret_key = "ThisIsTheSecretKey";
 	private SecretKey key;
-	 
 	
 	public AuthenticationHelper() throws Exception {
-		key = new SecretKeySpec(secret_key.getBytes(), "AES");
+//		SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+		byte[] key_bytes = secret_key.getBytes("UTF-8");
+		MessageDigest sha = MessageDigest.getInstance("SHA-1");
+		key_bytes = sha.digest(key_bytes);
+		key_bytes = Arrays.copyOf(key_bytes, 24); // use only first 128 bit
+
+		SecretKey key = new SecretKeySpec(key_bytes, "AES");
+		
 		System.out.println("Secret key" + key);
-		ecipher = Cipher.getInstance("DES");
-	    dcipher = Cipher.getInstance("DES");
+		ecipher = Cipher.getInstance("AES");
+	    dcipher = Cipher.getInstance("AES");
 	    ecipher.init(Cipher.ENCRYPT_MODE, key);
-	    dcipher.init(Cipher.DECRYPT_MODE, key);
+	    try {
+	    	dcipher.init(Cipher.DECRYPT_MODE, key);
+	    } catch(Exception ex) {
+	    	ex.printStackTrace();
+	    }
 	}
 	
 	public static AuthenticationHelper getInstance() {
@@ -71,7 +81,7 @@ public class AuthenticationHelper {
 					read = (JSONObject) read_list.get(0);
 				
 					if(read.containsKey("password")) {
-						if(((String)read.get("password")).equalsIgnoreCase(get_SHA_1_Secure((String)paramObj.get("password")))) {
+						if(((String)read.get("password")).equals(get_SHA_1_Secure((String)paramObj.get("password")))) {
 							// Authenticate
 							JSONObject auth = new JSONObject();
 							auth.put("username", paramObj.get("username"));
@@ -143,28 +153,29 @@ public class AuthenticationHelper {
 	    
 	}
 	
-	public static String get_SHA_1_Secure(String passwordToHash)
+	public static String get_SHA_1_Secure(String passwordToHash) throws Exception
     {
         String generatedPassword = null;
         try {
-        	byte[] salt = secret_key.getBytes();
+//        	byte[] salt = ;
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(salt);
-            byte[] bytes = md.digest(passwordToHash.getBytes());
-            
+            md.update(secret_key.getBytes("UTF8"));
+            byte[] bytes = md.digest(passwordToHash.getBytes("UTF8"));
+            System.out.println(passwordToHash);
+            System.out.print(bytes);
             StringBuilder sb = new StringBuilder();
             for(int i=0; i < bytes.length ;i++)
             {
                 sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
             generatedPassword = sb.toString();
+
+            System.out.println(generatedPassword);
         }
         catch (NoSuchAlgorithmException e)
         {
             e.printStackTrace();
         }
-        System.out.println(passwordToHash);
-        System.out.println(generatedPassword);
         return generatedPassword;
     }
 	
