@@ -5,7 +5,7 @@
   * Uses Google Cloud Platform SQL service to store data.
   * Deployed on Google App Engine.
   * Jersey library used for JAX-RS API.
-## Provides APIs
+## APIs
   * To create, list and delete users.
   * To create, list and delete customers.
   * To login users.
