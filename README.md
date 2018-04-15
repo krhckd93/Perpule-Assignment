@@ -9,7 +9,7 @@
   * To create, list and delete users.
   * To create, list and delete customers.
   * To login users.
-## Usage Guidelines
+## Authentication Guidelines
   * Create a new user
   * Login with the correct credentials, on successful login authentication token is returned.
   * To access the other APIs, pass the authentication token in the request header as "auth" key.
