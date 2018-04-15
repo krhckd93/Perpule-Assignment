@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.perpule.assignment.sample_webservice.base.DBColumn;
 import com.perpule.assignment.sample_webservice.customer.CustomerDB;
+import com.perpule.assignment.sample_webservice.user.UserDB;
 
 @SuppressWarnings("unchecked")
 public class DatabaseHelper {
@@ -67,6 +68,10 @@ public class DatabaseHelper {
     	}
 	}
 	
+	public void InitializeDB() {
+		new UserDB().createTable();
+		new CustomerDB().createTable();
+	}
 	public boolean createTable() {
 		
 		String sql = "CREATE TABLE IF NOT EXISTS customer (";
@@ -208,6 +213,9 @@ public class DatabaseHelper {
 			while(rs.next()) {
 				obj = new JSONObject();
 				try {
+					if(rs.getString("id") != null) {
+						obj.put("id", rs.getString("id"));	
+					}
 					if(rs.getString("first_name") != null) {
 						obj.put("first_name", rs.getString("first_name"));	
 					}

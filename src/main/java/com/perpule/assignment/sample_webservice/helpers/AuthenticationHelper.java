@@ -74,7 +74,7 @@ public class AuthenticationHelper {
 			JSONObject paramObj = (JSONObject) parser.parse(user);
 			
 			if(paramObj.containsKey("username") && paramObj.containsKey("password")) {
-				String sql = "SELECT * FROM customer WHERE username = ".concat("'" + paramObj.get("username") + "'");
+				String sql = "SELECT * FROM res_user WHERE username = ".concat("'" + paramObj.get("username") + "'");
 				JSONArray read_list = DatabaseHelper.getInstance().read(sql);
 				JSONObject read = new JSONObject();
 				if(read_list.size() > 0) {
@@ -87,28 +87,24 @@ public class AuthenticationHelper {
 							auth.put("username", paramObj.get("username"));
 							auth.put("password", paramObj.get("password"));
 							response.put("token", encrypt(auth.toJSONString()));
-							return response.toJSONString();
 						} else {
-							response.put("error", "Wrong password");
-							return response.toJSONString();	
+							response.put("error", "Wrong password or username.");
 						}
 					} else {
 						response.put("error", "'password' not found.");
-						return response.toJSONString();	
 					}
 				} else {
-					response.put("error", "'username' required.");
-					return response.toJSONString();
+					response.put("error", "Login failure. User not found.");
 				}
 			} else {
-				response.put("error", "'username' required.");
-				return response.toJSONString();
+				response.put("error", "'username' and 'password' are required.");
+				
 			}
         } catch(Exception e) {
             e.printStackTrace();
             response.put("error", e.toString());
-			return response.toJSONString();
         }
+		return response.toJSONString();
 	}
 	
 	public boolean authenticate(String token) {

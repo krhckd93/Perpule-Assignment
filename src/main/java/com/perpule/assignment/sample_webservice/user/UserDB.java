@@ -1,18 +1,17 @@
-package com.perpule.assignment.sample_webservice.customer;
+package com.perpule.assignment.sample_webservice.user;
 
 import java.util.ArrayList;
 
 import com.perpule.assignment.sample_webservice.base.BaseDB;
 import com.perpule.assignment.sample_webservice.base.DBColumn;
 
-public class CustomerDB extends BaseDB{
-	
-	public CustomerDB() {
+public class UserDB extends BaseDB {
+	public UserDB() {
 		
 	}
 	
 	protected String getTableName() {
-		return "customer";
+		return "res_user";
 	}
 	
 	public ArrayList<DBColumn> getModelColumns() {
@@ -21,6 +20,8 @@ public class CustomerDB extends BaseDB{
 		columns.add(new DBColumn("id", "SERIAL PRIMARY KEY"));
 		columns.add(new DBColumn("first_name", "VARCHAR"));
 		columns.add(new DBColumn("last_name", "VARCHAR"));
+		columns.add(new DBColumn("username", "VARCHAR"));
+		columns.add(new DBColumn("password", "VARCHAR"));
 		
 		return columns;
 	}

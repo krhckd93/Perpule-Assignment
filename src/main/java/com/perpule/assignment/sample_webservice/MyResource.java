@@ -31,7 +31,7 @@ public class MyResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String getIt() {
     	
-    	DatabaseHelper.getInstance().createTable();
+    	DatabaseHelper.getInstance().InitializeDB();
     	// Returns the instance of InetAddress containing
         // local host name and address
     	InetAddress localhost;
