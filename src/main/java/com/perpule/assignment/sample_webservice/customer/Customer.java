@@ -99,7 +99,7 @@ public class Customer {
 			}
 			
 			if(customer.containsKey("last_name")) {
-				columns = columns.concat("last_name,");
+				columns = columns.concat("last_name");
 				values = values.concat("," + "'" + customer.get("last_name") + "'");
 			}
 			
