@@ -22,6 +22,8 @@ public class UserDB extends BaseDB {
 		columns.add(new DBColumn("last_name", "VARCHAR"));
 		columns.add(new DBColumn("username", "VARCHAR"));
 		columns.add(new DBColumn("password", "VARCHAR"));
+		columns.add(new DBColumn("email", "VARCHAR"));
+		columns.add(new DBColumn("phone", "VARCHAR"));
 		
 		return columns;
 	}

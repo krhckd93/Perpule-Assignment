@@ -38,9 +38,9 @@ public class User {
 
 			String sql = ""; 
 			if(user_id != -1 ) {
-				sql = "SELECT id, first_name, last_name, username, password from res_user WHERE id = " + user_id + ";";
+				sql = "SELECT id, first_name, last_name, username, password, email, phone from res_user WHERE id = " + user_id + ";";
 			} else {
-				sql = "SELECT id, first_name, last_name, username, password from res_user;";
+				sql = "SELECT id, first_name, last_name, username, password, email, phone from res_user;";
 			}
 
 			try {
@@ -72,8 +72,8 @@ public class User {
 			ex.printStackTrace();
 			user = new JSONObject();
 		}
-		if(!user.containsKey("first_name") || !user.containsKey("last_name") || !user.containsKey("username") || !user.containsKey("password")) {
-			response.put("error", "'first_name', 'last_name', 'username' and 'password' are required.");
+		if(!user.containsKey("first_name") || !user.containsKey("last_name") || !user.containsKey("password") || (!user.containsKey("email") && !user.containsKey("phone")) ) {
+			response.put("error", "'first_name', 'last_name', 'password', 'email' and 'phone' are required.");
 			return response.toJSONString();
 		}
 		
@@ -105,6 +105,16 @@ public class User {
 		if(user.containsKey("username")) {
 			columns = columns.concat("username,");
 			values = values.concat("," + "'" + user.get("username") + "'");
+		}
+		
+		if(user.containsKey("email")) {
+			columns = columns.concat("email,");
+			values = values.concat("," + "'" + user.get("email") + "'");
+		}
+		
+		if(user.containsKey("phone")) {
+			columns = columns.concat("phone,");
+			values = values.concat("," + "'" + user.get("phone") + "'");
 		}
 		
 		if(user.containsKey("password")) {

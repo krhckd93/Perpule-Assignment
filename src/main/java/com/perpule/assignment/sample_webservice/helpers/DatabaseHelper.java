@@ -228,6 +228,12 @@ public class DatabaseHelper {
 					if(rs.getString("password") != null) {
 						obj.put("password", rs.getString("password"));	
 					}
+					if(rs.getString("phone") != null) {
+						obj.put("phone", rs.getString("phone"));	
+					}
+					if(rs.getString("email") != null) {
+						obj.put("email", rs.getString("email"));	
+					}
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}

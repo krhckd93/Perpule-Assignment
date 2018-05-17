@@ -73,8 +73,24 @@ public class AuthenticationHelper {
 			JSONParser parser = new JSONParser();
 			JSONObject paramObj = (JSONObject) parser.parse(user);
 			
-			if(paramObj.containsKey("username") && paramObj.containsKey("password")) {
-				String sql = "SELECT * FROM res_user WHERE username = ".concat("'" + paramObj.get("username") + "'");
+			if((paramObj.containsKey("phone") || paramObj.containsKey("email") || paramObj.containsKey("username")) && paramObj.containsKey("password")) {
+				String where="";
+				String key="", value="";
+				if(paramObj.containsKey("username")) {
+					where = "WHERE username = ".concat("'" + paramObj.get("username") + "'");
+					key = "username"; 
+					value =  (String)paramObj.get("username");
+				} else if (paramObj.containsKey("phone")) {
+					where = "WHERE phone = ".concat("'" + paramObj.get("phone") + "'");
+					key = "phone";
+					value =  (String)paramObj.get("phone");
+				} else if(paramObj.containsKey("email")) {
+					where = "WHERE email = ".concat("'" + paramObj.get("email") + "'");
+					key = "email"; 
+					value =  (String)paramObj.get("email");
+				}
+
+				String sql = "SELECT * FROM res_user ".concat(where);
 				JSONArray read_list = DatabaseHelper.getInstance().read(sql);
 				JSONObject read = new JSONObject();
 				if(read_list.size() > 0) {
@@ -84,7 +100,7 @@ public class AuthenticationHelper {
 						if(((String)read.get("password")).equals(get_SHA_1_Secure((String)paramObj.get("password")))) {
 							// Authenticate
 							JSONObject auth = new JSONObject();
-							auth.put("username", paramObj.get("username"));
+							auth.put(key, value);
 							auth.put("password", paramObj.get("password"));
 							response.put("token", encrypt(auth.toJSONString()));
 						} else {
@@ -98,7 +114,6 @@ public class AuthenticationHelper {
 				}
 			} else {
 				response.put("error", "'username' and 'password' are required.");
-				
 			}
         } catch(Exception e) {
             e.printStackTrace();
