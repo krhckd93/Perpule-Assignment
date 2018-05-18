@@ -103,7 +103,9 @@ public class AuthenticationHelper {
 							JSONObject auth = new JSONObject();
 							auth.put(key, value);
 							auth.put("password", paramObj.get("password"));
-							response.put("token", encrypt(auth.toJSONString()));
+							JSONObject result = new JSONObject();
+							result.put("token", encrypt(auth.toJSONString()));
+							response.put("result", result);
 						} else {
 							response.put("error", "Wrong password or username.");
 						}
