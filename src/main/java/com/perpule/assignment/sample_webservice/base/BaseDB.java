@@ -1,7 +1,5 @@
 package com.perpule.assignment.sample_webservice.base;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
@@ -13,7 +11,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONObject;
 
-import com.perpule.assignment.sample_webservice.customer.CustomerDB;
 import com.perpule.assignment.sample_webservice.helpers.DatabaseHelper;
 
 @Path("/db/drop_table")
@@ -39,7 +36,7 @@ public abstract class BaseDB {
 		}
 		sql = sql.concat(" );");
 		try {
-			int a = DatabaseHelper.getInstance().executeRawUpdate(sql);
+			DatabaseHelper.getInstance().executeRawUpdate(sql);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -50,6 +47,7 @@ public abstract class BaseDB {
 	
 
 	
+	@SuppressWarnings("unchecked")
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

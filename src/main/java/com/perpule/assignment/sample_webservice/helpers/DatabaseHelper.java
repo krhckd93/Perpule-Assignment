@@ -18,7 +18,7 @@ public class DatabaseHelper {
 
 	public static DatabaseHelper instance = null;
 	public static Connection connection = null;
-	private String connectionURL = "jdbc:postgresql://35.200.242.186/postgres";
+	private String connectionURL = "jdbc:postgresql://35.200.139.208:5432/box8";
 	private String username = "postgres";
 	private String password =  "password";
 	
@@ -54,6 +54,7 @@ public class DatabaseHelper {
 		try {
 	    	connection = null;
 	    	Class.forName("org.postgresql.Driver").newInstance();
+	    	System.out.println(connectionURL);
 	    	connection = DriverManager.getConnection(connectionURL, username, password);
 	    	System.out.println("Database Connection");
 	    	System.out.println(connection.isValid(1000));

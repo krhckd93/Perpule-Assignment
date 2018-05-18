@@ -21,6 +21,7 @@ import com.perpule.assignment.sample_webservice.helpers.DatabaseHelper;
 @Path("/user")
 public class User {
 	
+	@SuppressWarnings("unchecked")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getUser(@DefaultValue("-1") @QueryParam("id") Long user_id, @HeaderParam("auth") String token) {
@@ -58,6 +59,7 @@ public class User {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -147,6 +149,7 @@ public class User {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

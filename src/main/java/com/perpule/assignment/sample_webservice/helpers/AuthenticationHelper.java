@@ -2,7 +2,8 @@ package com.perpule.assignment.sample_webservice.helpers;
 
 import javax.ws.rs.Consumes;
 
-import java.security.*;
+
+//import java.security.*;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -15,7 +16,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
+//import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -31,7 +32,7 @@ public class AuthenticationHelper {
 
 	private Cipher dcipher;
 	private static String secret_key = "ThisIsTheSecretKey";
-	private SecretKey key;
+//	private SecretKey key;
 	
 	public AuthenticationHelper() throws Exception {
 //		SecretKey key = KeyGenerator.getInstance("DES").generateKey();
@@ -137,6 +138,7 @@ public class AuthenticationHelper {
 		
 	}
 	
+	@SuppressWarnings("restriction")
 	public String encrypt(String str) throws Exception {
 	    byte[] utf8 = str.getBytes("UTF8");
 
@@ -150,6 +152,7 @@ public class AuthenticationHelper {
 	    return new sun.misc.BASE64Encoder().encode(enc);
 	}
 
+	@SuppressWarnings("restriction")
 	public String decrypt(String str)  throws Exception {
 
 		byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(str);
@@ -190,6 +193,7 @@ public class AuthenticationHelper {
         return generatedPassword;
     }
 	
+	@SuppressWarnings("unused")
 	private static byte[] getSalt() throws NoSuchAlgorithmException
     {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
